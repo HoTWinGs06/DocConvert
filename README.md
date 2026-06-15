@@ -29,10 +29,10 @@ A private, minimalist, distraction-free document converter web application.
 
 Initialize your remote repository on GitHub and push this code:
 
-1. Go to [github.com/new](https://github.com/new) and create a repository named `pdf-to-word-converter`.
+1. Go to [github.com/new](https://github.com/new) and create a repository named `DocConvert`.
 2. Connect and push your local commits by running these commands in your project folder:
    ```bash
-   git remote add origin https://github.com/HoTWinGs06/pdf-to-word-converter.git
+   git remote add origin https://github.com/HoTWinGs06/DocConvert.git
    git push -u origin main
    ```
 
@@ -44,9 +44,9 @@ Render offers a fully-featured **Free Tier** for Docker-based Web Services.
 
 1. Create a free account at [Render.com](https://render.com).
 2. From the Dashboard, click **New +** and select **Web Service**.
-3. Connect your GitHub account and select your `pdf-to-word-converter` repository.
+3. Connect your GitHub account and select your `DocConvert` repository.
 4. Render will automatically read the `Dockerfile` in the project. Configure the settings:
-   - **Name**: `pdf-to-word-converter`
+   - **Name**: `docconvert`
    - **Region**: Choose the closest one to you
    - **Branch**: `main`
    - **Runtime**: `Docker` (automatically selected)
