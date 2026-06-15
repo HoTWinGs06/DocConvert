@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocConvert — Minimalist PDF & Word Converter</title>
+    <meta name="description" content="A private, distraction-free PDF and Word converter. No ads, no tracking. Files are automatically deleted after 1 hour.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="container">
+        <header class="app-header">
+            <h1 class="logo">DocConvert</h1>
+            <p class="tagline">Private, distraction-free PDF and Word converter.</p>
+        </header>
+
+        <section class="converter-card">
+            <!-- Mode Toggle Segmented Control -->
+            <div class="mode-selector">
+                <button type="button" class="mode-btn active" id="mode-pdf-to-word" data-mode="pdf-to-word">
+                    PDF to Word
+                </button>
+                <button type="button" class="mode-btn" id="mode-word-to-pdf" data-mode="word-to-pdf">
+                    Word to PDF
+                </button>
+            </div>
+
+            <!-- Upload Dropzone -->
+            <div class="dropzone" id="dropzone">
+                <input type="file" id="file-input" class="file-input" accept=".pdf,.docx,.doc">
+                <div class="dropzone-content">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="dropzone-text">Drag & drop your file here, or <span class="browse-link">browse</span></p>
+                    <p class="dropzone-subtext">Supports PDF, DOCX, and DOC up to 25MB</p>
+                </div>
+            </div>
+
+            <!-- Progress / Status Area (Hidden by default) -->
+            <div class="status-panel hidden" id="status-panel">
+                <div class="file-info">
+                    <div class="file-icon-wrapper" id="file-icon-container">
+                        <!-- File type specific SVG icon will be inserted here -->
+                    </div>
+                    <div class="file-details">
+                        <div class="file-name" id="file-name">document.pdf</div>
+                        <div class="file-meta" id="file-size">1.2 MB</div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar & Text -->
+                <div class="progress-container" id="progress-container">
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                    <div class="progress-status-row">
+                        <span class="progress-text" id="progress-text">Uploading...</span>
+                        <span class="progress-percentage" id="progress-percentage">0%</span>
+                    </div>
+                </div>
+
+                <!-- Actions (Download / Convert / Reset) -->
+                <div class="action-buttons hidden" id="action-buttons">
+                    <a href="#" class="btn btn-primary" id="download-btn" download>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Converted File
+                    </a>
+                    <button type="button" class="btn btn-secondary" id="reset-btn">
+                        Convert another file
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Banner -->
+            <div class="error-banner hidden" id="error-banner">
+                <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <div class="error-message" id="error-message">An error occurred during conversion.</div>
+                <button type="button" class="error-close-btn" id="error-close-btn">&times;</button>
+            </div>
+        </section>
+
+        <footer class="app-footer">
+            <p>Your privacy is guaranteed. All uploads and converted files are deleted automatically after 1 hour.</p>
+            <p class="copyright">&copy; 2026 DocConvert. Open source and self-hosted.</p>
+        </footer>
+    </main>
+    <script src="/static/app.js"></script>
+</body>
+</html>
