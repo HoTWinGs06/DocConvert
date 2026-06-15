@@ -22,35 +22,3 @@ A private, minimalist, distraction-free document converter web application.
    python app.py
    ```
 4. Open your browser and go to `http://127.0.0.1:5000`.
-
----
-
-## How to Upload to your GitHub
-
-Initialize your remote repository on GitHub and push this code:
-
-1. Go to [github.com/new](https://github.com/new) and create a repository named `DocConvert`.
-2. Connect and push your local commits by running these commands in your project folder:
-   ```bash
-   git remote add origin https://github.com/HoTWinGs06/DocConvert.git
-   git push -u origin main
-   ```
-
----
-
-## How to Deploy for Free (Render.com)
-
-Render offers a fully-featured **Free Tier** for Docker-based Web Services.
-
-1. Create a free account at [Render.com](https://render.com).
-2. From the Dashboard, click **New +** and select **Web Service**.
-3. Connect your GitHub account and select your `DocConvert` repository.
-4. Render will automatically read the `Dockerfile` in the project. Configure the settings:
-   - **Name**: `docconvert`
-   - **Region**: Choose the closest one to you
-   - **Branch**: `main`
-   - **Runtime**: `Docker` (automatically selected)
-   - **Instance Type**: **Free** ($0/month)
-5. Click **Deploy Web Service**. 
-
-Render will automatically pull the code, install LibreOffice, resolve dependencies, and launch your private converter web application!
