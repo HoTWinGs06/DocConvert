@@ -2,8 +2,12 @@ import os
 import time
 import uuid
 import threading
-import pythoncom
-import win32com.client
+try:
+    import pythoncom
+    import win32com.client
+    HAS_WIN32COM = True
+except ImportError:
+    HAS_WIN32COM = False
 from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from pdf2docx import Converter
@@ -42,6 +46,8 @@ cleanup_thread = threading.Thread(target=cleanup_old_files, args=(UPLOAD_FOLDER,
 cleanup_thread.start()
 
 def ensure_word_registry_settings():
+    if os.name != 'nt':
+        return
     try:
         import winreg
         registry_path = r"Software\Microsoft\Office\16.0\Word\Options"
@@ -58,54 +64,83 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def convert_pdf_to_docx(pdf_path, docx_path):
-    """Converts a PDF file to DOCX using MS Word via COM for layout accuracy."""
-    pythoncom.CoInitialize()
-    word = None
-    doc = None
-    try:
-        import win32com.client.gencache
-        word = win32com.client.gencache.EnsureDispatch("Word.Application")
-        word.Visible = False
-        word.DisplayAlerts = 0  # wdAlertsNone
-        # Open PDF read-only without conversion confirmation prompts
-        doc = word.Documents.Open(os.path.abspath(pdf_path), False, True)
-        doc.SaveAs(os.path.abspath(docx_path), 16)  # 16 = wdFormatXMLDocument (docx)
-    finally:
-        if doc:
-            try:
-                doc.Close(SaveChanges=0)
-            except Exception:
-                pass
-        if word:
-            try:
-                word.Quit()
-            except Exception:
-                pass
-        pythoncom.CoUninitialize()
+    """Converts a PDF file to DOCX using Word COM on Windows or pdf2docx on Linux."""
+    if HAS_WIN32COM and os.name == 'nt':
+        pythoncom.CoInitialize()
+        word = None
+        doc = None
+        try:
+            import win32com.client.gencache
+            word = win32com.client.gencache.EnsureDispatch("Word.Application")
+            word.Visible = False
+            word.DisplayAlerts = 0  # wdAlertsNone
+            doc = word.Documents.Open(os.path.abspath(pdf_path), False, True)
+            doc.SaveAs(os.path.abspath(docx_path), 16)  # 16 = wdFormatXMLDocument (docx)
+        finally:
+            if doc:
+                try: doc.Close(SaveChanges=0)
+                except Exception: pass
+            if word:
+                try: word.Quit()
+                except Exception: pass
+            pythoncom.CoUninitialize()
+    else:
+        # Fallback to python-based converter on Linux
+        cv = Converter(pdf_path)
+        cv.convert(docx_path, start=0, end=None)
+        cv.close()
+
+def convert_docx_to_pdf_libreoffice(docx_path, pdf_path):
+    """Converts a DOCX file to PDF using LibreOffice headless command line on Linux."""
+    import subprocess
+    import shutil
+    
+    soffice_path = shutil.which('libreoffice') or shutil.which('soffice')
+    if not soffice_path:
+        for path in ['/usr/bin/libreoffice', '/usr/bin/soffice', '/usr/lib/libreoffice/program/soffice']:
+            if os.path.exists(path):
+                soffice_path = path
+                break
+                
+    if not soffice_path:
+        raise RuntimeError("LibreOffice/soffice executable not found in PATH or standard directories.")
+        
+    out_dir = os.path.dirname(os.path.abspath(pdf_path))
+    cmd = [
+        soffice_path,
+        '--headless',
+        '--convert-to', 'pdf',
+        '--outdir', out_dir,
+        os.path.abspath(docx_path)
+    ]
+    
+    print(f"Running LibreOffice conversion: {' '.join(cmd)}")
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(f"LibreOffice conversion failed: {result.stderr}")
 
 def convert_docx_to_pdf(docx_path, pdf_path):
-    """Converts a DOCX/DOC file to PDF using MS Word via COM."""
-    pythoncom.CoInitialize()
-    word = None
-    doc = None
-    try:
-        word = win32com.client.Dispatch("Word.Application")
-        word.Visible = False
-        doc = word.Documents.Open(os.path.abspath(docx_path))
-        # SaveAs with FileFormat=17 represents PDF format in Word VBA
-        doc.SaveAs(os.path.abspath(pdf_path), FileFormat=17)
-    finally:
-        if doc:
-            try:
-                doc.Close(SaveChanges=0)  # 0 is wdDoNotSaveChanges
-            except Exception:
-                pass
-        if word:
-            try:
-                word.Quit()
-            except Exception:
-                pass
-        pythoncom.CoUninitialize()
+    """Converts a DOCX/DOC file to PDF using MS Word on Windows or LibreOffice on Linux."""
+    if HAS_WIN32COM and os.name == 'nt':
+        pythoncom.CoInitialize()
+        word = None
+        doc = None
+        try:
+            word = win32com.client.Dispatch("Word.Application")
+            word.Visible = False
+            doc = word.Documents.Open(os.path.abspath(docx_path))
+            doc.SaveAs(os.path.abspath(pdf_path), FileFormat=17)
+        finally:
+            if doc:
+                try: doc.Close(SaveChanges=0)
+                except Exception: pass
+            if word:
+                try: word.Quit()
+                except Exception: pass
+            pythoncom.CoUninitialize()
+    else:
+        # Fallback to LibreOffice headless conversion on Linux
+        convert_docx_to_pdf_libreoffice(docx_path, pdf_path)
 
 @app.route('/')
 def index():
