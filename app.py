@@ -68,7 +68,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def convert_pdf_to_docx(pdf_path, docx_path):
-    """Converts a PDF file to DOCX using Word COM on Windows or LibreOffice headless on Linux."""
+    """Converts a PDF file to DOCX using Word COM on Windows or pdf2docx on Linux."""
     if HAS_WIN32COM and os.name == 'nt':
         pythoncom.CoInitialize()
         word = None
@@ -89,47 +89,12 @@ def convert_pdf_to_docx(pdf_path, docx_path):
                 except Exception: pass
             pythoncom.CoUninitialize()
     else:
-        # Use LibreOffice headless on Linux — much better quality than pdf2docx
-        # for complex layouts, borders, images, and text formatting.
-        import subprocess
-        import shutil
-
-        soffice_path = shutil.which('libreoffice') or shutil.which('soffice')
-        if not soffice_path:
-            for path in ['/usr/bin/libreoffice', '/usr/bin/soffice', '/usr/lib/libreoffice/program/soffice']:
-                if os.path.exists(path):
-                    soffice_path = path
-                    break
-
-        if not soffice_path:
-            raise RuntimeError("LibreOffice/soffice executable not found. Cannot convert PDF to DOCX.")
-
-        out_dir = os.path.dirname(os.path.abspath(docx_path))
-        cmd = [
-            soffice_path,
-            '--headless',
-            '--infilter=writer_pdf_import',
-            '--convert-to', 'docx',
-            '--outdir', out_dir,
-            os.path.abspath(pdf_path)
-        ]
-
-        print(f"Running LibreOffice PDF→DOCX conversion: {' '.join(cmd)}")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120)
-        if result.returncode != 0:
-            raise RuntimeError(f"LibreOffice PDF→DOCX conversion failed: {result.stderr}")
-
-        # LibreOffice outputs with the original filename but .docx extension —
-        # rename to our expected UUID-based output path if different
-        expected_lo_output = os.path.join(
-            out_dir,
-            os.path.splitext(os.path.basename(pdf_path))[0] + '.docx'
-        )
-        if os.path.abspath(expected_lo_output) != os.path.abspath(docx_path):
-            if os.path.exists(expected_lo_output):
-                shutil.move(expected_lo_output, docx_path)
-            else:
-                raise RuntimeError("LibreOffice conversion produced no output file.")
+        # Use pdf2docx on Linux — preserves layout structure better than LibreOffice
+        if not HAS_PDF2DOCX:
+            raise RuntimeError("pdf2docx library is not installed. Cannot convert PDF to Word.")
+        cv = Pdf2DocxConverter(pdf_path)
+        cv.convert(docx_path)
+        cv.close()
 
 def convert_docx_to_pdf_libreoffice(docx_path, pdf_path):
     """Converts a DOCX file to PDF using LibreOffice headless command line on Linux."""
