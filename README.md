@@ -1,6 +1,8 @@
 # DocConvert — PDF ↔ Word Converter
 
-A private, minimalist, distraction-free document converter web application. 
+🌐 **Live App**: [https://docconvert-pqmx.onrender.com](https://docconvert-pqmx.onrender.com/)
+
+A private, minimalist, distraction-free document converter web application. Convert PDF to Word and Word to PDF — no ads, no sign-up, files auto-deleted after 1 hour.
 
 ## Features
 - **Cross-Platform Architecture**: Uses native Microsoft Word COM engine on Windows for 100% layout fidelity, and automatically falls back to LibreOffice headless + `pdf2docx` on Linux environments.
