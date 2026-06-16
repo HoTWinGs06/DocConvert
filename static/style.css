@@ -5,6 +5,9 @@
     padding: 0;
 }
 
+/* ============================
+   Light Theme (Default)
+   ============================ */
 :root {
     --bg-color: #f8fafc;
     --card-bg: #ffffff;
@@ -29,6 +32,39 @@
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 16px;
+    --toggle-bg: #e2e8f0;
+    --toggle-hover: #cbd5e1;
+    --toggle-icon: #475569;
+    --btn-primary-text: #ffffff;
+}
+
+/* ============================
+   Dark Theme
+   ============================ */
+:root[data-theme="dark"] {
+    --bg-color: #0b0f1a;
+    --card-bg: #141924;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border-color: #1e293b;
+    --primary-color: #e2e8f0;
+    --primary-hover: #f1f5f9;
+    --primary-light: #1e293b;
+    --accent-color: #60a5fa;
+    --accent-hover: #93bbfd;
+    --accent-light: rgba(96, 165, 250, 0.08);
+    --error-color: #f87171;
+    --error-light: rgba(248, 113, 113, 0.08);
+    --error-border: rgba(248, 113, 113, 0.25);
+    --success-color: #34d399;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.4), 0 4px 10px -4px rgba(0, 0, 0, 0.3);
+    --toggle-bg: #1e293b;
+    --toggle-hover: #334155;
+    --toggle-icon: #e2e8f0;
+    --btn-primary-text: #0f172a;
 }
 
 body {
@@ -42,6 +78,7 @@ body {
     padding: 20px;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.35s ease, color 0.35s ease;
 }
 
 /* Container & Layout */
@@ -57,17 +94,78 @@ body {
     text-align: center;
 }
 
+.header-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+}
+
 .logo {
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.03em;
     color: var(--text-primary);
-    margin-bottom: 6px;
+    margin-bottom: 0;
+    transition: color 0.35s ease;
 }
 
 .tagline {
     font-size: 14px;
     color: var(--text-secondary);
+    margin-top: 6px;
+    transition: color 0.35s ease;
+}
+
+/* ============================
+   Theme Toggle Button
+   ============================ */
+.theme-toggle {
+    position: absolute;
+    right: -48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background-color: var(--toggle-bg);
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--toggle-hover);
+    transform: scale(1.08);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+.theme-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--toggle-icon);
+    transition: color 0.25s ease, transform 0.4s ease;
+}
+
+/* In light mode: show moon (click to go dark), hide sun */
+.sun-icon {
+    display: none;
+}
+.moon-icon {
+    display: block;
+}
+
+/* In dark mode: show sun (click to go light), hide moon */
+:root[data-theme="dark"] .sun-icon {
+    display: block;
+}
+:root[data-theme="dark"] .moon-icon {
+    display: none;
 }
 
 /* Main UI Card */
@@ -80,7 +178,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    transition: border-color 0.2s ease;
+    transition: background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
 
 /* Mode Selector (Segmented control) */
@@ -90,6 +188,7 @@ body {
     padding: 4px;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
+    transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
 .mode-btn {
@@ -173,6 +272,7 @@ body {
     font-size: 15px;
     font-weight: 500;
     color: var(--text-primary);
+    transition: color 0.35s ease;
 }
 
 .browse-link {
@@ -180,11 +280,13 @@ body {
     text-decoration: underline;
     text-underline-offset: 3px;
     font-weight: 600;
+    transition: color 0.35s ease;
 }
 
 .dropzone-subtext {
     font-size: 12px;
     color: var(--text-muted);
+    transition: color 0.35s ease;
 }
 
 /* Status & Progress Panel */
@@ -196,6 +298,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     background-color: var(--bg-color);
+    transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
 .file-info {
@@ -213,6 +316,7 @@ body {
     border-radius: var(--radius-sm);
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
+    transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
 .file-icon {
@@ -228,6 +332,14 @@ body {
     color: #2563eb; /* Word Blue */
 }
 
+:root[data-theme="dark"] .file-icon.pdf {
+    color: #f87171;
+}
+
+:root[data-theme="dark"] .file-icon.word {
+    color: #60a5fa;
+}
+
 .file-details {
     flex: 1;
     min-width: 0;
@@ -240,11 +352,13 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.35s ease;
 }
 
 .file-meta {
     font-size: 12px;
     color: var(--text-muted);
+    transition: color 0.35s ease;
 }
 
 /* Progress Bar */
@@ -259,6 +373,7 @@ body {
     background-color: var(--border-color);
     border-radius: 3px;
     overflow: hidden;
+    transition: background-color 0.35s ease;
 }
 
 .progress-bar {
@@ -266,7 +381,7 @@ body {
     width: 0%;
     background-color: var(--primary-color);
     border-radius: 3px;
-    transition: width 0.2s ease;
+    transition: width 0.2s ease, background-color 0.35s ease;
 }
 
 .progress-status-row {
@@ -275,6 +390,7 @@ body {
     font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
+    transition: color 0.35s ease;
 }
 
 /* Buttons */
@@ -303,7 +419,7 @@ body {
 
 .btn-primary {
     background-color: var(--primary-color);
-    color: #ffffff;
+    color: var(--btn-primary-text);
 }
 
 .btn-primary:hover {
@@ -336,6 +452,7 @@ body {
     border: 1px solid var(--error-border);
     border-radius: var(--radius-md);
     color: var(--error-color);
+    transition: background-color 0.35s ease, border-color 0.35s ease, color 0.35s ease;
 }
 
 .error-icon {
@@ -375,6 +492,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    transition: color 0.35s ease;
 }
 
 .copyright {
@@ -387,6 +505,12 @@ body {
 }
 
 /* Responsive adjust */
+@media (max-width: 640px) {
+    .theme-toggle {
+        position: static;
+    }
+}
+
 @media (max-width: 480px) {
     body {
         padding: 16px;

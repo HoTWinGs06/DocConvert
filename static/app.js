@@ -17,6 +17,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorBanner = document.getElementById('error-banner');
     const errorMessage = document.getElementById('error-message');
     const errorCloseBtn = document.getElementById('error-close-btn');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    // ============================
+    //  Theme (Dark/Light) Logic
+    // ============================
+    function getPreferredTheme() {
+        const stored = localStorage.getItem('docconvert-theme');
+        if (stored) return stored;
+        // Respect OS-level preference
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+    }
+
+    // Apply immediately on load
+    applyTheme(getPreferredTheme());
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+        localStorage.setItem('docconvert-theme', newTheme);
+    });
+
+    // Listen for OS preference changes (e.g., user toggles system dark mode)
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        // Only auto-switch if user hasn't manually set a preference
+        if (!localStorage.getItem('docconvert-theme')) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
+    });
 
     // State
     let currentMode = 'pdf-to-word'; // default
